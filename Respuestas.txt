@@ -1,0 +1,17 @@
+Vue no detecta cambios dentro de objetos reactivos de la forma que esperarías. ¿Cómo podrías observar un cambio en una propiedad anidada?
+
+- Para solucionar esto, se debe usar watch() con la opción { deep: true }. Esto permite detectar modificaciones en cualquier propiedad anidada dentro del objeto.
+
+watch() permite escuchar cambios en propiedades específicas dentro de reactive(), explica cómo funciona.
+
+- El método watch() permite observar cambios en valores específicos dentro de un objeto reactive(). Cada vez que el valor cambia, se ejecuta una función con el nuevo valor y el valor anterior.
+
+- Funcionamiento de watch():
+    Se define qué propiedad o estado queremos observar.
+    Se ejecuta una función cada vez que cambia.
+    Se puede usar { deep: true } para detectar cambios dentro de objetos anidados.
+
+¿Cómo harías que un watch() detecte cambios en stock dentro de un array de productos?
+
+- Si stock está dentro de un array de objetos reactivos, Vue no lo detecta automáticamente. Para solucionarlo, se debe observar el array completo con { deep: true }.
+
