@@ -1,27 +1,64 @@
 <script setup>
 import './assets/styles.css';
-import { reactive } from 'vue';
+import { ref, onMounted } from 'vue';
 import TarjetaGrafica from './components/TarjetaGrafica.vue';
 
-const tarjetasGraficas = reactive([
-  { nombre: "NVIDIA RTX 4090", precio: 1800, stock: 5, disponible: true },
-  { nombre: "AMD Radeon RX 7900 XTX", precio: 999, stock: 0, disponible: false },
-  { nombre: "NVIDIA RTX 4070 Ti", precio: 799, stock: 10, disponible: true },
-  { nombre: "AMD Radeon RX 7800 XT", precio: 500, stock: 2, disponible: true },
-  { nombre: "NVIDIA RTX 3060", precio: 299, stock: 0, disponible: false }
-]);
+const url = 'http://localhost:5000/graphql';
 
-const reducirStock = (index) => {
-  if (tarjetasGraficas[index].stock > 0) {
-    tarjetasGraficas[index].stock--;
-    tarjetasGraficas[index].disponible = tarjetasGraficas[index].stock > 0;
+const tarjetasGraficas = ref([]);
+
+async function cargarProductos() {
+  const respuesta = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `query { productos { id nombre precio stock disponible } }`
+    })
+  });
+  const datos = await respuesta.json();
+
+  if (datos.data && datos.data.productos) {
+    tarjetasGraficas.value = datos.data.productos;
   }
-};
+}
 
-const aumentarStock = (index) => {
-  tarjetasGraficas[index].stock++;
-  tarjetasGraficas[index].disponible = true;
-};
+async function reducirStock(index) {
+  const tarjeta = tarjetasGraficas.value[index];
+  if (tarjeta.stock > 0) {
+    const respuesta = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: `mutation { modificarStock(id: ${tarjeta.id}, cantidad: -1) { producto { id nombre precio stock disponible } } }`
+      })
+    });
+    const datos = await respuesta.json();
+
+    if (datos.data && datos.data.modificarStock && datos.data.modificarStock.producto) {
+      tarjetasGraficas.value[index] = datos.data.modificarStock.producto;
+    }
+  }
+}
+
+async function aumentarStock(index) {
+  const tarjeta = tarjetasGraficas.value[index];
+  const respuesta = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `mutation { modificarStock(id: ${tarjeta.id}, cantidad: 1) { producto { id nombre precio stock disponible } } }`
+    })
+  });
+  const datos = await respuesta.json();
+
+  if (datos.data && datos.data.modificarStock && datos.data.modificarStock.producto) {
+    tarjetasGraficas.value[index] = datos.data.modificarStock.producto;
+  }
+}
+
+onMounted(() => {
+  cargarProductos();
+});
 </script>
 
 <template>
@@ -30,7 +67,7 @@ const aumentarStock = (index) => {
     <ul>
       <TarjetaGrafica 
         v-for="(tarjeta, index) in tarjetasGraficas" 
-        :key="index" 
+        :key="tarjeta.id" 
         :tarjeta="tarjeta" 
         :index="index"
         :reducirStock="reducirStock"

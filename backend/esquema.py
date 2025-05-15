@@ -1,7 +1,7 @@
 import graphene
 from productos import productos
 
-# Tipo Producto
+# Definimos el modelo de datos para un producto
 class Producto(graphene.ObjectType):
     id = graphene.Int()
     nombre = graphene.String()
@@ -9,14 +9,14 @@ class Producto(graphene.ObjectType):
     stock = graphene.Int()
     disponible = graphene.Boolean()
 
-# Query para obtener todos los productos
+# Consulta principal que devuelve la lista de productos
 class Query(graphene.ObjectType):
     productos = graphene.List(Producto)
 
     def resolve_productos(self, info):
         return productos
 
-# Mutación para cambiar stock
+# Mutación para modificar el stock de un producto
 class ModificarStock(graphene.Mutation):
     class Arguments:
         id = graphene.Int(required=True)
@@ -25,23 +25,23 @@ class ModificarStock(graphene.Mutation):
     producto = graphene.Field(lambda: Producto)
 
     def mutate(self, info, id, cantidad):
-        # Buscamos el producto
+        # Buscar el producto en la lista
         for p in productos:
             if p["id"] == id:
                 p["stock"] += cantidad
-                # Asegurarse de que no quede stock negativo
+                # El stock no puede ser negativo
                 if p["stock"] < 0:
                     p["stock"] = 0
-                # Actualizar disponibilidad
-                if p["stock"] == 0:
-                    p["disponible"] = False
-                else:
-                    p["disponible"] = True
+                # Actualizar la disponibilidad en función del stock
+                p["disponible"] = p["stock"] > 0
                 return ModificarStock(producto=p)
-        raise Exception("Producto no encontrado")
+        
+        # Si no se encuentra el producto, devolver None
+        return ModificarStock(producto=None)
 
-# Definimos esquema
+# Definimos la clase que agrupa las mutaciones disponibles
 class Mutation(graphene.ObjectType):
     modificar_stock = ModificarStock.Field()
 
+# Creamos el esquema GraphQL combinando consultas y mutaciones
 schema = graphene.Schema(query=Query, mutation=Mutation)
