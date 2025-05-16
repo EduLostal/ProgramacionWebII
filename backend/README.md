@@ -11,13 +11,17 @@ Este repositorio tiene un backend sencillo para gestionar el inventario de una t
 conda create -n inventario-backend python=3.11
 conda activate inventario-backend
 
-### Instala las dependencias en el entorno elegido
+### Instala las dependencias en el entorno que hayas elegido
 
-pip install flask flask-graphql graphene flask-cors
+pip install flask flask-graphql graphene flask-cors requests
 
-### inicia el servidor a través de app.py
+### Inicia el servidor a través de app.py
 
 python app.py
+
+### Prueba los tests
+
+python test.py
 
 ### La parte del back puede probarse a través de "http://localhost:5000/graphql" utilizando algunas querys (dejo un par de ejemplo)
 
