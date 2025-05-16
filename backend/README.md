@@ -4,6 +4,8 @@ Este repositorio tiene un backend sencillo para gestionar el inventario de una t
 
 ## Cómo ejecutar el proyecto?
 
+## Parte del back:
+
 ### Crea el entorno (en mi caso utilizare conda por costumbre):
 
 conda create -n inventario-backend python=3.11
@@ -11,7 +13,7 @@ conda activate inventario-backend
 
 ### Instala las dependencias en el entorno elegido
 
-pip install flask flask-graphql graphene
+pip install flask flask-graphql graphene flask-cors
 
 ### inicia el servidor a través de app.py
 
@@ -42,6 +44,18 @@ mutation {
 }
 
 ### Cada reincio del servidor vuelve las cantidades a su estado original
+
+## Parte del front:
+
+### Tener Node.js instalado
+
+### Instala las dependencias del proyecto
+
+npm install
+
+### Inicia el front
+
+npm run dev
 
 
 
